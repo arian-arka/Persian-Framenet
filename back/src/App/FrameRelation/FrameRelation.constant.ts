@@ -1,0 +1,15 @@
+export const FRAME_RELATION_NAME = [
+    "Inherits from",
+    "Is Inherited by",
+    "Perspective on",
+    "Is Perspectivized in",
+    "Uses",
+    "Is Used by",
+    "Subframe of",
+    "Has Subframe(s)",
+    "Precedes",
+    "Is Preceded by",
+    "Is Inchoative of",
+    "Is Causative of",
+    "See also",
+];
