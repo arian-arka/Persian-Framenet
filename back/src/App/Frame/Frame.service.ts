@@ -20,7 +20,7 @@ export default new class FrameService extends MongooseService<FrameInterface> {
     }
 
     async list(data: PaginateFrameInterface, withSoftDelete: boolean) {
-        data.limit = 5000;
+        data.limit = 1000;
         let query: any = {};
 
         if (!withSoftDelete)
