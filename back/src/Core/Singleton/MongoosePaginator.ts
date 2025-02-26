@@ -102,7 +102,7 @@ class MongoosePaginator {
             for(let p of populate)
                 q.populate(p);
 
-        q.limit(settings.limit).skip(skip);
+        !isAggregate && q.limit(settings.limit).skip(skip);
 
         const data = await q.exec();
 
