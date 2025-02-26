@@ -41,14 +41,18 @@ export default class ReportController {
     }
 
     async sample2(request: FastifyRequest) {
-        //return await TaggedSentenceService.updateMany({status:TAGGED_SENTENCE_STATUS['waiting'],issuer:'6483770d5573c95c1be3f184'},{status:TAGGED_SENTENCE_STATUS['editing']});
 
-        return {
+        const before = {
+            editing : (await TaggedSentenceService.all({status:TAGGED_SENTENCE_STATUS['editing'],issuer:'6483770d5573c95c1be3f184'})).length,
+            waiting : (await TaggedSentenceService.all({status:TAGGED_SENTENCE_STATUS['waiting'],issuer:'6483770d5573c95c1be3f184'})).length,
+        };
+        await TaggedSentenceService.updateMany({status:TAGGED_SENTENCE_STATUS['editing'],issuer:'6483770d5573c95c1be3f184'},{status:TAGGED_SENTENCE_STATUS['waiting']});
+        const after = {
             editing : (await TaggedSentenceService.all({status:TAGGED_SENTENCE_STATUS['editing'],issuer:'6483770d5573c95c1be3f184'})).length,
             waiting : (await TaggedSentenceService.all({status:TAGGED_SENTENCE_STATUS['waiting'],issuer:'6483770d5573c95c1be3f184'})).length,
         };
 
-        return ;
+        return {after,before};
         return await ReportService.sample4();
 
     }
