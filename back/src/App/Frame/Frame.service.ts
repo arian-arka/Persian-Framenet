@@ -72,48 +72,48 @@ export default new class FrameService extends MongooseService<FrameInterface> {
         query = [{$match: query}];
 
         query = [...query,
-            {
-                $lookup: {
-                    from: "taggedsentences",
-                    let: {frameId: "$_id"},
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        {$eq: ["$frame", "$$frameId"]},
-                                        {$eq: ["$status", 30]},
-                                        {$eq: ["$lang", 2]},
-                                    ]
-                                }
-                            }
-                        }
-                    ],
-                    as: "matched_sentences"
-                }
-            },
-            ...(data.hasPublishedSentence !== undefined && data.hasPublishedSentence !== null ?
-                    [{$match: {"matched_sentences.0": {$exists: data.hasPublishedSentence}}}] :
-                    []
-            ),
-            {
-                $project: {
-                    frame_data: "$$ROOT",
-                    sentence_count: {
-                        $size: '$matched_sentences',
-                    }
-                }
-            },
-
-            {
-                $replaceRoot: {
-                    newRoot: {
-                        $mergeObjects: [
-                            "$frame_data", {count: "$sentence_count"}
-                        ]
-                    }
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "taggedsentences",
+            //         let: {frameId: "$_id"},
+            //         pipeline: [
+            //             {
+            //                 $match: {
+            //                     $expr: {
+            //                         $and: [
+            //                             {$eq: ["$frame", "$$frameId"]},
+            //                             {$eq: ["$status", 30]},
+            //                             {$eq: ["$lang", 2]},
+            //                         ]
+            //                     }
+            //                 }
+            //             }
+            //         ],
+            //         as: "matched_sentences"
+            //     }
+            // },
+            // ...(data.hasPublishedSentence !== undefined && data.hasPublishedSentence !== null ?
+            //         [{$match: {"matched_sentences.0": {$exists: data.hasPublishedSentence}}}] :
+            //         []
+            // ),
+            // {
+            //     $project: {
+            //         frame_data: "$$ROOT",
+            //         sentence_count: {
+            //             $size: '$matched_sentences',
+            //         }
+            //     }
+            // },
+            //
+            // {
+            //     $replaceRoot: {
+            //         newRoot: {
+            //             $mergeObjects: [
+            //                 "$frame_data", {count: "$sentence_count"}
+            //             ]
+            //         }
+            //     }
+            // },
             { $lookup: {from: 'frames', localField: 'mirror', foreignField: '_id', as: 'mirror'}},
             {$set: {'mirror': {$first: '$mirror'}}}
         ];
