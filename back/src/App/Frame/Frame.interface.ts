@@ -44,6 +44,7 @@ export interface PublishFrameInterface {
     message?: string,
 }
 export interface PaginateFrameInterface extends MongoosePaginationInterface{
+    hasPublishedSentence?:number,
     issuer?: string|undefined,
     name?: string,
     lang?: number,

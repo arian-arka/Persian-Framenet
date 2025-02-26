@@ -26,6 +26,7 @@ const ListFrame: Component = () => {
         Log.secondary('filters', filters);
         let _filters = {...filters};
 
+        _filters.hasPublishedSentence = !!_filters.hasPublishedSentence ? parseInt(_filters.hasPublishedSentence) : undefined;
         _filters.issuer = !!_filters.issuer ? '1' : undefined;
         _filters.lang = _filters.lang !== '' ? parseInt(_filters.lang) : null;
         _filters.status = _filters.status !== '' ? parseInt(_filters.status) : null;
@@ -59,6 +60,7 @@ const ListFrame: Component = () => {
         lang: null,
         status: '',
         issuer: '',
+        hasPublishedSentence: null,
         name: null,
         limit:50,
     });
@@ -120,6 +122,23 @@ const ListFrame: Component = () => {
                         ],
                     },
                     {
+                        name: 'hasPublishedSentence',
+                        value: '',
+                        type: 'select',
+                        label: 'hasPublishedSentence',
+                        options: [
+                            {
+                                text: 'همه',
+                                value: '',
+                            },
+                            {
+                                text: 'true',
+                                value: '1',
+                            },
+
+                        ],
+                    },
+                    {
                         name: 'issuer',
                         value: '',
                         type: 'select',
@@ -177,6 +196,13 @@ const ListFrame: Component = () => {
                         customValue(val, row) {
                             return (<A class="font-medium text-gray-800 dark:text-blue-500 hover:underline"  target="_blank"
                                        href={`/frame/${row._id}`}>{val}</A>)
+                        }
+                    },
+                    {
+                        key: 'count',
+                        text: 'جمله های برچسب خورده',
+                        customValue(val, row) {
+                            return val ?? '*';
                         }
                     },
                     // {

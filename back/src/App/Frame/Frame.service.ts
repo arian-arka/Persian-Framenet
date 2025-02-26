@@ -20,27 +20,29 @@ export default new class FrameService extends MongooseService<FrameInterface> {
     }
 
     async list(data: PaginateFrameInterface, withSoftDelete: boolean) {
-        const query: any = {};
+        data.limit = 5000;
+        let query: any = {};
 
         if (!withSoftDelete)
             query['$or'] = [
                 {'deletedAt': {'$exists': false}},
-                {'deletedAt': null},
+                {'deletedAt': {$eq: null}},
             ];
 
         if (!!data.issuer)
-            query['issuer'] = data.issuer;
+            query['issuer'] = {$eq: data.issuer};
 
         if (data.lang)
-            query['lang'] = data.lang;
+            query['lang'] = {$eq: data.lang};
 
         if (data.status)
-            query['status'] = data.status;
+            query['status'] = {$eq: data.status};
         const sort: any = {};
         if (data.name) {
-            if (Str.isValidObjectId(data.name))
-                query['_id'] = new Types.ObjectId(data.name);
-            else {
+            if (Str.isValidObjectId(data.name)) {
+                query['_id'] = {$eq: new Types.ObjectId(data.name)};
+                sort['name'] = 1;
+            } else {
                 if (data.name.length > 2 && data.name[0] === '"' && data.name[data.name.length - 1] === '"') {
                     query['name'] = {
                         '$eq': Str.safeString(data.name.substring(1, data.name.length - 1)),
@@ -56,23 +58,72 @@ export default new class FrameService extends MongooseService<FrameInterface> {
             //     '$search': `\"${Str.safeString(data.name)}\"`,
             //     '$caseSensitive': false
             // };
-        }
-        // const sorts: any = [
-        //     {name: 1},
-        //     {name: -1},
-        //     {lang: 1},
-        //     {lang: -1},
-        //     {status: 1},
-        //     {status: -1},
-        //     {createdAt: 1},
-        //     {createdAt: -1},
-        // ];
+        } else sort['name'] = 1;
+        /*const sorts: any = [
+            {name: 1},
+            {name: -1},
+            {lang: 1},
+            {lang: -1},
+            {status: 1},
+            {status: -1},
+            {createdAt: 1},
+            {createdAt: -1},
+        ];*/
+        query = [{$match: query}];
+
+        query = [...query,
+            {
+                $lookup: {
+                    from: "taggedsentences",
+                    let: {frameId: "$_id"},
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        {$eq: ["$frame", "$$frameId"]},
+                                        {$eq: ["$status", 30]},
+                                        {$eq: ["$lang", 2]},
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "matched_sentences"
+                }
+            },
+            ...(data.hasPublishedSentence !== undefined && data.hasPublishedSentence !== null ?
+                    [{$match: {"matched_sentences.0": {$exists: data.hasPublishedSentence}}}] :
+                    []
+            ),
+            {
+                $project: {
+                    frame_data: "$$ROOT",
+                    sentence_count: {
+                        $size: '$matched_sentences',
+                    }
+                }
+            },
+
+            {
+                $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: [
+                            "$frame_data", {count: "$sentence_count"}
+                        ]
+                    }
+                }
+            },
+            { $lookup: {from: 'frames', localField: 'mirror', foreignField: '_id', as: 'mirror'}},
+            {$set: {'mirror': {$first: '$mirror'}}}
+        ];
 
 
         return await this.paginate<PaginateFrameInterface>({
             data,
             query,
-            sort,
+            // sort,
+            isAggregate: true,
             //sort: data.sort ? sorts[data.sort + 1] : {},
             populate: ['mirror', {path: 'issuer', select: ['name', '_id']}]
         })
@@ -80,7 +131,7 @@ export default new class FrameService extends MongooseService<FrameInterface> {
 
     async listWithoutWaiting(data: PaginateFrameInterface, withSoftDelete: boolean) {
         const query: any = {
-            status:{'$ne':TAGGED_SENTENCE_STATUS.waiting}
+            status: {'$ne': TAGGED_SENTENCE_STATUS.waiting}
         };
 
         if (!withSoftDelete)

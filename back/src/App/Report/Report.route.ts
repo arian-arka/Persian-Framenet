@@ -12,6 +12,9 @@ export default Route.instance(function (route: Route) {
             route.middleware(SuspendedUser.make());
             route.post('/waitingTaggedSentencesOfLogs', 'Report/Report@waitingTaggedSentencesOfLogs').make();
             route.post('/waitingTaggedSentences', 'Report/Report@waitingTaggedSentences').make();
+            route.get('/sample1','Report/Report@sample1').make();
+            route.get('/sample2','Report/Report@sample2').make();
+
         })
     });
 })

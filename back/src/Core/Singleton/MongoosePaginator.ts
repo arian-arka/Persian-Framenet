@@ -89,6 +89,10 @@ class MongoosePaginator {
         if (lastPage < settings.page)
             throw BadRequest.forMessage('Bad pagination');
 
+        console.log(
+            JSON.stringify(_q,null,2)
+        );
+
         const q = isAggregate ? model.aggregate(_q) : model.find(_q)
         if(sort && !isAggregate){
             q.sort(sort);
