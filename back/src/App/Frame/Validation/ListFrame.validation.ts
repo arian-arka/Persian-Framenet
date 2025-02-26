@@ -8,7 +8,7 @@ export default class ListFrameValidation extends Validation<PaginateFrameInterfa
         return {
             type: "object",
             properties: {
-                hasPublishedSentence:{type:"integer",minimum:1,nullable:true},
+                hasPublishedSentence:{type:"integer",minimum:0,nullable:true},
                 issuer:{type:"string", maxLength: 1,nullable:true},
                 name:{type:"string", maxLength: 300,nullable:true},
                 lang:{type:"integer",minimum:1,nullable:true},

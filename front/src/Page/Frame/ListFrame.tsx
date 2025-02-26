@@ -125,17 +125,20 @@ const ListFrame: Component = () => {
                         name: 'hasPublishedSentence',
                         value: '',
                         type: 'select',
-                        label: 'hasPublishedSentence',
+                        label: 'جمله نهایی',
                         options: [
                             {
                                 text: 'همه',
                                 value: '',
                             },
                             {
-                                text: 'true',
+                                text: 'دارد',
                                 value: '1',
                             },
-
+                            {
+                                text: 'ندارد',
+                                value: '0',
+                            },
                         ],
                     },
                     {
@@ -198,13 +201,6 @@ const ListFrame: Component = () => {
                                        href={`/frame/${row._id}`}>{val}</A>)
                         }
                     },
-                    {
-                        key: 'count',
-                        text: 'جمله های برچسب خورده',
-                        customValue(val, row) {
-                            return val ?? '*';
-                        }
-                    },
                     // {
                     //     key: 'lang',
                     //     text: 'زبان',
@@ -220,6 +216,13 @@ const ListFrame: Component = () => {
                                 return '-';
                             return (<A class="font-medium text-blue-600  dark:text-blue-500 hover:underline"  target="_blank"
                                        href={`/frame/${val._id}`}>{val.name}</A>)
+                        }
+                    },
+                    {
+                        key: 'count',
+                        text: 'جمله های نهایی',
+                        customValue(val, row) {
+                            return val ?? '*';
                         }
                     },
                     {

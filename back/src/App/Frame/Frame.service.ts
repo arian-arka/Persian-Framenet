@@ -91,7 +91,7 @@ export default new class FrameService extends MongooseService<FrameInterface> {
                 }
             },
             ...(data.hasPublishedSentence !== undefined && data.hasPublishedSentence !== null ?
-                    [{$match: {"matched_sentences.0": {$exists: data.hasPublishedSentence}}}] :
+                    [{$match: {"matched_sentences.0": {$exists: data.hasPublishedSentence ? true : false}}}] :
                     []
             ),
             {
